@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dip"
-        android:layout_above="@id/choose_photo_btn"
+
         android:text="@string/take_photo_string" />
 
     <Button
@@ -21,15 +21,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dip"
-        android:layout_above="@id/view_history_btn"
+        android:layout_below="@id/take_photo_btn"
         android:text="@string/choose_photo_string" />
 
     <Button
         android:id="@+id/view_history_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:padding="10dip"
+        android:layout_below="@id/view_history_btn"
         android:text="@string/view_history_string" />
 
 </RelativeLayout>
