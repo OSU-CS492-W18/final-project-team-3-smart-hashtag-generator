@@ -1,13 +1,11 @@
 <resources>
     <string name="app_name">Smart Hashtag Generator</string>
 
-
     <!-- Button Strings -->
     <string name="take_photo_string">Take a Photo</string>
     <string name="choose_photo_string">Choose a Photo</string>
     <string name="view_history_string">View History</string>
 
     <string name="history_view_title">History</string>
-
 
 </resources>
