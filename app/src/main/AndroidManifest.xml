@@ -23,7 +23,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ViewHistory"></activity>
+        <activity
+            android:name=".ViewHistory"
+            android:label="View History"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.smarthashtaggenerator.MainActivity" />
+        </activity>
+        <activity
+            android:name=".TakePhoto"
+            android:label="Take a Photo"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.smarthashtaggenerator.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".ChoosePhoto"
+            android:label="Choose a Photo"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.smarthashtaggenerator.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
