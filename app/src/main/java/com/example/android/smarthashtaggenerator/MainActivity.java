@@ -1,7 +1,10 @@
 package com.example.android.smarthashtaggenerator;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.widget.TextView;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     //upon choosing image
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -74,8 +79,13 @@ public class MainActivity extends AppCompatActivity {
             //case from choosing photo:
             case 1:
                 if(resultCode == RESULT_OK){
+                    //requesting permission
                     Uri selectedImage = data.getData();
                     //send image to api
+
+                    //send image over to choose photo activity to handle
+                    Intent choosePhotoIntent = new Intent(MainActivity.this, ChoosePhoto.class);
+                    startActivity(choosePhotoIntent);
                 }
                 break;
         }
