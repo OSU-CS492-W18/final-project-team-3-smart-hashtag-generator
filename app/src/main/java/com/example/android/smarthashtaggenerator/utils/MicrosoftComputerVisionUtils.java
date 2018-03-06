@@ -34,7 +34,7 @@ public class MicrosoftComputerVisionUtils {
         public String tag;
     }
 
-    public static String buildVisionURL(/*will need picture here*/) {
+    public static String buildVisionURL() {
         return Uri.parse(MIC_VISION__BASE_URL).buildUpon()
                 .appendQueryParameter(MIC_VISION_VISUAL_FEATURE_PARAM, "Tags")
                 .build()
