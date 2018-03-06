@@ -1,6 +1,7 @@
 package com.example.android.smarthashtaggenerator;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -40,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
         mChoosePhotoTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent choosePhotoIntent = new Intent(MainActivity.this, ChoosePhoto.class);
-                startActivity(choosePhotoIntent);
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(pickPhoto , 1);
             }
         });
 
@@ -55,5 +57,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //upon choosing image
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        switch(requestCode) {
+
+            case 0:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = data.getData();
+                    //send image to api
+                }
+
+                break;
+            //case from choosing photo:
+            case 1:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = data.getData();
+                    //send image to api
+                }
+                break;
+        }
+    }
 }
