@@ -26,8 +26,8 @@ import java.util.TimeZone;
 public class MicrosoftComputerVisionUtils {
 
     //final url: https://[location].api.cognitive.microsoft.com/vision/v1.0/analyze[?visualFeatures][&details][&language]
-    private final static String MIC_VISION__BASE_URL = "http://westus.api.cognitive.microsoft.com/vision/v1.0/analyze";
-    private final static String MIC_VISION_VISUAL_FEATURE_PARAM = "?";
+    private final static String MIC_VISION__BASE_URL = "http://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
+    private final static String MIC_VISION_VISUAL_FEATURE_PARAM = "?visualFeatures";
 
     public static class ComputerVisionItem implements Serializable {
         public static final String EXTRA_VISION_ITEM = "com.example.android.smarthashtaggenerator.utils.ComputerVisionItem.Result";
@@ -41,19 +41,28 @@ public class MicrosoftComputerVisionUtils {
                 .toString();
     }
 
-    public static ArrayList<ComputerVisionItem> parseForecastJSON(String forecastJSON) {
+    public static ArrayList<ComputerVisionItem> parseVisionJSON(String visionJSON) {
         try {
-            //parse JSON Object
+            ArrayList<ComputerVisionItem> computerVisionItemList = new ArrayList<ComputerVisionItem>();
 
+            //parse JSON Object
+            JSONObject visionObj = new JSONObject(visionJSON);
+            JSONArray visionList = visionObj.getJSONArray("tags");
+
+            for (int i = 0; i < visionList.length(); i++) {
+                ComputerVisionItem visionItem = new ComputerVisionItem();
+                JSONObject visionListElem = visionList.getJSONObject(i);
+
+                visionItem.tag = visionListElem.getString("name");
+
+                computerVisionItemList.add(visionItem);
             }
-            return ;
+
+            return computerVisionItemList;
+
         } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        } catch (ParseException e) {
             e.printStackTrace();
             return null;
         }
     }
-
 }
