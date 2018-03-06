@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Smart Hashtag Generator</string>
+    <string name="app_name">Smart Hashtags</string>
 
     <!-- Button Strings -->
     <string name="take_photo_string">Take a Photo</string>
