@@ -3,6 +3,7 @@ package com.example.android.smarthashtaggenerator;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -21,29 +22,21 @@ public class TakePhoto extends AppCompatActivity {
 
     private static final String TAG = TakePhoto.class.getSimpleName();
     private static final int REQUEST_TAKE_PHOTO = 1;
-    private static final String EXTRA_PHOTO = "TakePhoto";
-    private Uri mPhotoUri;
-    private File photoFile;
-    private Photo photo;
-    private ImageView imageView;
+    private ImageView cameraIV;
     private String mCurrentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo);
-        /*Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            photoFile = this.createTemoraryFile("picture", ".jpg");
-            photoFile.delete();
-            mPhotoUri = Uri.fromFile(photoFile);
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoUri);
-            startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "Unable to create file to take picture!");
-        }*/
-        dispatchTakePictureIntent();
+        cameraIV = (ImageView) findViewById(R.id.iv_image_from_camera);
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(MainActivity.EXTRA_TAKE_PHOTO)) {
+            File file = (File) intent.getSerializableExtra(MainActivity.EXTRA_TAKE_PHOTO);
+            Bitmap photoBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            cameraIV.setImageBitmap(photoBitmap);
+        }
+        //dispatchTakePictureIntent();
     }
 
     private void dispatchTakePictureIntent() {
@@ -90,43 +83,16 @@ public class TakePhoto extends AppCompatActivity {
         return image;
     }
 
-    /*private File createTemoraryFile(String part, String ext) throws Exception {
-        File tempDir = Environment.getExternalStorageDirectory();
-        tempDir = new File(tempDir.getAbsolutePath() + "/.temp");
-        if (!tempDir.exists()) {
-            tempDir.mkdirs();
-        }
-        return File.createTempFile(part, ext, tempDir);
-    }
-
-    public void retrieveImage(ImageView imageView) {
-        this.getContentResolver().notifyChange(mPhotoUri, null);
-        ContentResolver cr = this.getContentResolver();
-        Bitmap photoBitMap;
-        try {
-            photoBitMap = MediaStore.Images.Media.getBitmap(cr, mPhotoUri);
-            imageView.setImageBitmap(photoBitMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "Failed to load photoFile", e);
-        }
-    }
-
-    /*public void capturePhoto(String targetFileName) {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.withAppendedPath(mLocationForPhotos, targetFileName));
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, REQUEST_TAKE_PHOTO);
-        }
-    }*/
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            photo = new Photo();
-            //retrieveImage(imageView);
-            //Intent generateHashtagsIntent = new Intent(this, GenerateHashtags.class);
-            //generateHashtagsIntent.put
+            //photo = new Photo();
+            //retrieveImage(cameraIV);
+            File file = new File(mCurrentPhotoPath);
+            if (file.exists()) {
+                Bitmap photoBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                cameraIV.setImageBitmap(photoBitmap);
+            }
         }
     }
 }
