@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ACTIVITYRESULT_ID = 0;
-                /*Intent takePhotoIntent = new Intent(MainActivity.this, TakePhoto.class);
-                startActivity(takePhotoIntent);*/
                 dispatchTakePictureIntent();
             }
         });
@@ -102,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
 
             case 0:
                 if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){
-                    //Uri selectedImage = data.getData();
                     //send image to api
                     File file = new File(mCurrentPhotoPath);
                     if (file.exists()) {
@@ -135,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* INITIALIZE IMAGE FILE AND LET USER TAKE PHOTO */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -163,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* INITIALIZE IMAGE FILE */
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
