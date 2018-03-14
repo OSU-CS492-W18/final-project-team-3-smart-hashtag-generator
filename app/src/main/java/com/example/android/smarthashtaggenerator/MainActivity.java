@@ -10,7 +10,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.nfc.Tag;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,8 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import com.example.android.smarthashtaggenerator.utils.MicrosoftComputerVisionUtils;
 import com.example.android.smarthashtaggenerator.utils.NetworkUtils;
@@ -33,11 +37,12 @@ import com.example.android.smarthashtaggenerator.utils.NetworkUtils;
 import java.io.File;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
 
     private TextView mTakePhotoTV;
     private TextView mChoosePhotoTV;
     private TextView mHistoryPhotoTV;
+    private String mVisionURL;
 
     // For deciding what to do in onActivityResult
     private int ACTIVITYRESULT_ID;
@@ -47,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     public static final String EXTRA_TAKE_PHOTO = "Take Photo";
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String VISION_URL_KEY = "ComputerVision URL";
+    public static final String VISION_FILE_KEY = "ComputerVision File";
+    public static final String VISION_TAGS_KEY = "Tags";
+    private static final int VISION_LOADER_ID = 0;
+    private File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +71,12 @@ public class MainActivity extends AppCompatActivity {
         mChoosePhotoTV.getBackground().setAlpha(63);
         mHistoryPhotoTV.getBackground().setAlpha(63);
 
+        mVisionURL = MicrosoftComputerVisionUtils.buildVisionURL();
+
         mTakePhotoTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ACTIVITYRESULT_ID = 0;
+                ACTIVITYRESULT_ID = 1;
                 dispatchTakePictureIntent();
             }
         });
@@ -72,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         mChoosePhotoTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ACTIVITYRESULT_ID = 1;
+                ACTIVITYRESULT_ID = 2;
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(pickPhoto , 1);
@@ -98,17 +110,24 @@ public class MainActivity extends AppCompatActivity {
 
         switch(ACTIVITYRESULT_ID) {
 
-            case 0:
+            case 1:
                 if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){
                     //send image to api
-                    File file = new File(mCurrentPhotoPath);
+                    file = new File(mCurrentPhotoPath);
                     if (file.exists()) {
-                        /*Bitmap photoBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                        ImageView cameraIV = new ImageView(this);
-                        cameraIV.setImageBitmap(photoBitmap);*/
-                        Intent takePhotoIntent = new Intent(this, TakePhoto.class);
-                        takePhotoIntent.putExtra(EXTRA_TAKE_PHOTO, file);
-                        startActivity(takePhotoIntent);
+                        try {
+                            Bundle args = new Bundle();
+                            args.putString(VISION_URL_KEY, mVisionURL);
+                            getSupportLoaderManager().initLoader(VISION_LOADER_ID, args, this);
+                            //String visionJSON = NetworkUtils.doHTTPGet(url, file);
+                            //ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> tags = MicrosoftComputerVisionUtils.parseVisionJSON(visionJSON);
+                            /*for (MicrosoftComputerVisionUtils.ComputerVisionItem tag : tags) {
+                                Log.d(TAG, "Tag: " + tag);
+                            }*/
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                     }
 
 
@@ -116,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             //case from choosing photo:
-            case 1:
-                if(resultCode == RESULT_OK){
+            case 2:
+                if (resultCode == RESULT_OK){
                     //requesting permission
                     //send image to api
 
@@ -130,6 +149,35 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
         }
+    }
+
+    @Override
+    public Loader<String> onCreateLoader(int id, Bundle args) {
+        String visionURL = null;
+        if (args != null) {
+            visionURL = args.getString(VISION_URL_KEY);
+        }
+        return new ComputerVisionLoader(this, visionURL, file);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String data) {
+        Log.d(TAG, "Got tags from loader: " + data);
+        if (data != null) {
+            ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> tagItems = MicrosoftComputerVisionUtils.parseVisionJSON(data);
+            for (MicrosoftComputerVisionUtils.ComputerVisionItem tag : tagItems) {
+                Log.d(TAG, "Tag: " + tag.tag);
+            }
+            Intent showHashtagsIntent = new Intent(this, ShowTagsActivity.class);
+            showHashtagsIntent.putExtra(VISION_TAGS_KEY, tagItems);
+            showHashtagsIntent.putExtra(VISION_FILE_KEY, file);
+            startActivity(showHashtagsIntent);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
+        // Nothing to do...
     }
 
     /* INITIALIZE IMAGE FILE AND LET USER TAKE PHOTO */
@@ -176,5 +224,13 @@ public class MainActivity extends AppCompatActivity {
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+
+    String getBits(byte b) {
+        String result = "";
+        for (int i = 0; i < 8; i++) {
+            result += (b & (1 << i)) == 0 ? "0" : "1";
+        }
+        return result;
     }
 }

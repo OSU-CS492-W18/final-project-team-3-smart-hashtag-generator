@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.android.smarthashtaggenerator">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,8 +19,9 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,8 +29,9 @@
         </activity>
         <activity android:name=".SplashActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -48,12 +51,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.smarthashtaggenerator.MainActivity" />
+
             <intent-filter>
                 <action android:name="android.media.action.IMAGE_CAPTURE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ChoosePhoto"
             android:label="Choose a Photo"
@@ -63,6 +67,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.smarthashtaggenerator.MainActivity" />
         </activity>
+        <activity android:name=".ShowTagsActivity"></activity>
     </application>
 
 </manifest>

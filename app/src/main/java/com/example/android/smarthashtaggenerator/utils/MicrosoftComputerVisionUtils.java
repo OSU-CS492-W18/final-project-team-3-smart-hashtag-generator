@@ -26,7 +26,7 @@ import java.util.TimeZone;
 public class MicrosoftComputerVisionUtils {
 
     //final url: https://[location].api.cognitive.microsoft.com/vision/v1.0/analyze[?visualFeatures][&details][&language]
-    private final static String MIC_VISION__BASE_URL = "http://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
+    private final static String MIC_VISION__BASE_URL = "http://westcentralus.api.cognitive.microsoft.com/vision/v1.0/tag";
     private final static String MIC_VISION_VISUAL_FEATURE_PARAM = "?visualFeatures";
 
     public static class ComputerVisionItem implements Serializable {
