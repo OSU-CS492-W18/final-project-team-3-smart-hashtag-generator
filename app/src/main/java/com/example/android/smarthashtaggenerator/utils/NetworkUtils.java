@@ -22,7 +22,7 @@ public class NetworkUtils {
 
     private final static String MIC_VISION_CONTENT_TYPE = "application/octet-stream";
     //API key expires March 16, 2018
-    private final static String MIC_VISION_APPID = "ec3bec6497eb490c8d2fa03e664660e2";
+    private final static String MIC_VISION_APPID = "a81cd183c3234e4d959beb1651e3116e";
 
     private static final OkHttpClient mHTTPClient = new OkHttpClient();
 
