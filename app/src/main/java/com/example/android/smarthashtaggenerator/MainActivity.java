@@ -1,8 +1,10 @@
 package com.example.android.smarthashtaggenerator;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -143,7 +145,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     //send image over to choose photo activity to handle
                     //Intent choosePhotoIntent = new Intent(MainActivity.this, ChoosePhoto.class);
                     //startActivity(choosePhotoIntent);
-                    //Uri selectedImage = data.getData();
+                    Uri selectedImage = data.getData();
+                    String filePath = getPath(this, selectedImage);
+                    file = new File(filePath);
+
+                    Bundle args = new Bundle();
+                    args.putString(VISION_URL_KEY, mVisionURL);
+                    getSupportLoaderManager().initLoader(VISION_LOADER_ID, args, this);
+
                     //send image to api with AsyncTaskLoader
                 }
 
@@ -230,6 +239,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String result = "";
         for (int i = 0; i < 8; i++) {
             result += (b & (1 << i)) == 0 ? "0" : "1";
+        }
+        return result;
+    }
+
+    public static String getPath(Context context, Uri uri) {
+        String result = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int column_index = cursor.getColumnIndexOrThrow(proj[0]);
+                result = cursor.getString(column_index);
+            }
+            cursor.close();
+        }
+        if (result == null) {
+            Log.d(TAG, "File not found!");
+            result = null;
         }
         return result;
     }
