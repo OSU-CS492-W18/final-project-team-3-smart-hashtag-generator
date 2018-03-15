@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/final.iml" filepath="$PROJECT_DIR$/final.iml" />
-      <module fileurl="file://C:\Users\Owner\Documents\492\Project\final-project-team-3-smart-hashtag-generator\final.iml" filepath="C:\Users\Owner\Documents\492\Project\final-project-team-3-smart-hashtag-generator\final.iml" />
       <module fileurl="file://$PROJECT_DIR$/final-project-team-3-smart-hashtag-generator.iml" filepath="$PROJECT_DIR$/final-project-team-3-smart-hashtag-generator.iml" />
     </modules>
   </component>

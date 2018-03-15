@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String EXTRA_TAKE_PHOTO = "Take Photo";
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String VISION_URL_KEY = "ComputerVision URL";
-    public static final String VISION_FILE_KEY = "ComputerVision File";
-    public static final String VISION_TAGS_KEY = "Tags";
+    //public static final String VISION_FILE_KEY = "ComputerVision File";
+    public static final String VISION_OBJECT_KEY = "VisionItem";
     private static final int VISION_LOADER_ID = 0;
     private File file;
 
@@ -173,13 +173,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<String> loader, String data) {
         Log.d(TAG, "Got tags from loader: " + data);
         if (data != null) {
-            ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> tagItems = MicrosoftComputerVisionUtils.parseVisionJSON(data);
-            for (MicrosoftComputerVisionUtils.ComputerVisionItem tag : tagItems) {
-                Log.d(TAG, "Tag: " + tag.tag);
+            MicrosoftComputerVisionUtils.ComputerVisionItem visionItem = new MicrosoftComputerVisionUtils.ComputerVisionItem();
+            visionItem.file = file;
+            visionItem.tags = MicrosoftComputerVisionUtils.parseVisionJSON(data);
+            for (String tag : visionItem.tags) {
+                Log.d(TAG, "Tag: " + tag);
             }
             Intent showHashtagsIntent = new Intent(this, ShowTagsActivity.class);
-            showHashtagsIntent.putExtra(VISION_TAGS_KEY, tagItems);
-            showHashtagsIntent.putExtra(VISION_FILE_KEY, file);
+            showHashtagsIntent.putExtra(VISION_OBJECT_KEY, visionItem);
+            //showHashtagsIntent.putExtra(VISION_FILE_KEY, file);
             startActivity(showHashtagsIntent);
         }
     }
