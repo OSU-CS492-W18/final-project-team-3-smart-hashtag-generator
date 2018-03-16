@@ -1,10 +1,12 @@
 package com.example.android.smarthashtaggenerator;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private TextView mChoosePhotoTV;
     private TextView mHistoryPhotoTV;
     private String mVisionURL;
+    private SQLiteDatabase mDB;
 
     // For deciding what to do in onActivityResult
     private int ACTIVITYRESULT_ID;
@@ -72,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mTakePhotoTV.getBackground().setAlpha(63);
         mChoosePhotoTV.getBackground().setAlpha(63);
         mHistoryPhotoTV.getBackground().setAlpha(63);
+
+       DBHelper dbHelper = new DBHelper(this);
+        mDB = dbHelper.getWritableDatabase();
 
         mVisionURL = MicrosoftComputerVisionUtils.buildVisionURL();
 
@@ -176,9 +182,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             MicrosoftComputerVisionUtils.ComputerVisionItem visionItem = new MicrosoftComputerVisionUtils.ComputerVisionItem();
             visionItem.file = file;
             visionItem.tags = MicrosoftComputerVisionUtils.parseVisionJSON(data);
+             String tags = "";
             for (String tag : visionItem.tags) {
                 Log.d(TAG, "Tag: " + tag);
+                tags += tag + ' ';
             }
+            Uri uri;
+            uri = Uri.fromFile(visionItem.file);
+            String filePath = getPath(this, uri);
+            addResultToDB(tags,filePath);
             Intent showHashtagsIntent = new Intent(this, ShowTagsActivity.class);
             showHashtagsIntent.putExtra(VISION_OBJECT_KEY, visionItem);
             //showHashtagsIntent.putExtra(VISION_FILE_KEY, file);
@@ -261,5 +273,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             result = null;
         }
         return result;
+    }
+    private void addResultToDB(String tags, String url) {
+        ContentValues row = new ContentValues();
+         row.put(DBContract.SavedResults.COLUMN_TAGS, tags);
+         row.put(DBContract.SavedResults.COLUMN_PHOTO,url);
+          mDB.insert(DBContract.SavedResults.TABLE_NAME, null, row);
     }
 }
