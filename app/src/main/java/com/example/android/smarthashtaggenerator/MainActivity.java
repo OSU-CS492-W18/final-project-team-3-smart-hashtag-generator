@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.view.animation.Animation;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private TextView mTakePhotoTV;
     private TextView mChoosePhotoTV;
     private TextView mHistoryPhotoTV;
+    private ProgressBar mLoadingIndicatorPB;
     private String mVisionURL;
 
     // For deciding what to do in onActivityResult
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mTakePhotoTV = findViewById(R.id.take_photo_btn);
         mChoosePhotoTV = findViewById(R.id.choose_photo_btn);
         mHistoryPhotoTV = findViewById(R.id.view_history_btn);
+        mLoadingIndicatorPB = findViewById(R.id.pb_loading_indicator);
 
         mTakePhotoTV.getBackground().setAlpha(63);
         mChoosePhotoTV.getBackground().setAlpha(63);
@@ -162,6 +165,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<String> onCreateLoader(int id, Bundle args) {
+        mLoadingIndicatorPB.setVisibility(View.VISIBLE);
+        mTakePhotoTV.setVisibility(View.GONE);
+        mChoosePhotoTV.setVisibility(View.GONE);
+        mHistoryPhotoTV.setVisibility(View.GONE);
         String visionURL = null;
         if (args != null) {
             visionURL = args.getString(VISION_URL_KEY);
@@ -182,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             Intent showHashtagsIntent = new Intent(this, ShowTagsActivity.class);
             showHashtagsIntent.putExtra(VISION_OBJECT_KEY, visionItem);
             //showHashtagsIntent.putExtra(VISION_FILE_KEY, file);
+            mLoadingIndicatorPB.setVisibility(View.INVISIBLE);
             startActivity(showHashtagsIntent);
         }
     }
@@ -265,6 +273,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onResume() {
+        mLoadingIndicatorPB.setVisibility(View.INVISIBLE);
+        mTakePhotoTV.setVisibility(View.VISIBLE);
+        mChoosePhotoTV.setVisibility(View.VISIBLE);
+        mHistoryPhotoTV.setVisibility(View.VISIBLE);
         super.onResume();
     }
 }
