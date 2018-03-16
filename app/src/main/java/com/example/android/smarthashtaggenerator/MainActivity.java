@@ -262,4 +262,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
         return result;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }
