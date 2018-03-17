@@ -1,19 +1,13 @@
 package com.example.android.smarthashtaggenerator;
 
-import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.nfc.Tag;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
@@ -21,26 +15,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import com.example.android.smarthashtaggenerator.utils.MicrosoftComputerVisionUtils;
-import com.example.android.smarthashtaggenerator.utils.NetworkUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
 
@@ -79,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mChoosePhotoTV.getBackground().setAlpha(63);
         mHistoryPhotoTV.getBackground().setAlpha(63);
 
-       DBHelper dbHelper = new DBHelper(this);
+        DBHelper dbHelper = new DBHelper(this);
         mDB = dbHelper.getWritableDatabase();
 
         mVisionURL = MicrosoftComputerVisionUtils.buildVisionURL();
@@ -105,7 +90,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mHistoryPhotoTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent viewHistoryIntent = new Intent(MainActivity.this, ViewHistory.class);
+                /*ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> items = getAllSavedResults();
+                for (MicrosoftComputerVisionUtils.ComputerVisionItem item : items) {
+                    Log.d(TAG, "URI: " + Uri.fromFile(item.file.getAbsoluteFile()));
+                    Log.d(TAG, "Tags:" + item.tags.toString());
+                }*/
+                Intent viewHistoryIntent = new Intent(MainActivity.this, ViewHistoryActivity.class);
                 startActivity(viewHistoryIntent);
             }
         });
@@ -196,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
             Uri uri;
             uri = Uri.fromFile(visionItem.file);
-            String filePath = getPath(this, uri);
+            String filePath = uri.toString();
             addResultToDB(tags,filePath);
             Intent showHashtagsIntent = new Intent(this, ShowTagsActivity.class);
             showHashtagsIntent.putExtra(VISION_OBJECT_KEY, visionItem);
@@ -290,11 +280,47 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mChoosePhotoTV.setVisibility(View.VISIBLE);
         mHistoryPhotoTV.setVisibility(View.VISIBLE);
         super.onResume();
+    }
 
-      private void addResultToDB(String tags, String url) {
+    private long addResultToDB(String tags, String url) {
         ContentValues row = new ContentValues();
-         row.put(DBContract.SavedResults.COLUMN_TAGS, tags);
-         row.put(DBContract.SavedResults.COLUMN_PHOTO,url);
-          mDB.insert(DBContract.SavedResults.TABLE_NAME, null, row);
+        row.put(DBContract.SavedResults.COLUMN_TAGS, tags);
+        row.put(DBContract.SavedResults.COLUMN_PHOTO, url);
+        return mDB.insert(DBContract.SavedResults.TABLE_NAME, null, row);
+    }
+
+    private ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> getAllSavedResults() {
+        Cursor cursor = mDB.query(
+                DBContract.SavedResults.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                DBContract.SavedResults.COLUMN_TIMESTAMP + " DESC"
+        );
+
+        ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> savedResultsList = new ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem>();
+        ArrayList<String> savedTagsList = new ArrayList<String>();
+        while (cursor.moveToNext()) {
+            Uri fileUri = Uri.parse(cursor.getString(
+                    cursor.getColumnIndex(DBContract.SavedResults.COLUMN_PHOTO))
+            );
+            String allTags = cursor.getString(
+                    cursor.getColumnIndex(DBContract.SavedResults.COLUMN_TAGS));
+            StringTokenizer stTags = new StringTokenizer(allTags, " ");
+            while (stTags.hasMoreTokens()) {
+                String token = stTags.nextToken();
+                savedTagsList.add(token);
+            }
+            //savedLocationsList.add(location);
+            MicrosoftComputerVisionUtils.ComputerVisionItem item = new MicrosoftComputerVisionUtils.ComputerVisionItem();
+            item.file = new File(fileUri.getPath());
+            item.tags = savedTagsList;
+            savedResultsList.add(item);
+        }
+
+        cursor.close();
+        return savedResultsList;
     }
 }

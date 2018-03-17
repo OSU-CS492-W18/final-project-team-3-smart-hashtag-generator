@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ViewHistory"
+            android:name=".ViewHistoryActivity"
             android:label="View History"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
