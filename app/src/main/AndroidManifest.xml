@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ViewHistory"
+            android:name=".ViewHistoryActivity"
             android:label="View History"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
@@ -68,7 +68,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.smarthashtaggenerator.MainActivity" />
         </activity>
-        <activity android:name=".ShowTagsActivity"></activity>
+        <activity
+            android:name=".ShowTagsActivity"
+            android:label="Show Hashtags"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.smarthashtaggenerator.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
