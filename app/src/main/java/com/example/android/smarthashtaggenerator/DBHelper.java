@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class DBHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "hastag.db";
+    private static final String DATABASE_NAME = "hashtag.db";
     private static int DATABASE_VERSION = 1;
 
     public DBHelper(Context context) {
@@ -21,7 +21,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " + DBContract.SavedResults.TABLE_NAME + "(" +
                         DBContract.SavedResults._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         DBContract.SavedResults.COLUMN_PHOTO + " TEXT NOT NULL, " +
-                        DBContract.SavedResults.COLUMN_TAGS+ " TEXT, " +
+                        DBContract.SavedResults.COLUMN_TAGS+ " TEXT NOT NULL, " +
+                        DBContract.SavedResults.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                         ");";
         db.execSQL(SQL_CREATE_SAVED_REPOS_TABLE);
     }
