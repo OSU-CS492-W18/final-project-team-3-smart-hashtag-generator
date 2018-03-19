@@ -1,11 +1,19 @@
 package com.example.android.smarthashtaggenerator;
 
+import android.content.ClipboardManager;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.android.smarthashtaggenerator.utils.MicrosoftComputerVisionUtils;
 
@@ -15,6 +23,20 @@ import java.util.StringTokenizer;
 
 public class ViewHistoryActivity extends AppCompatActivity {
 
+    private RecyclerView mItemResultsRV;
+    private Adapter mAdapter;
+
+
+    //
+    private ImageView image;
+    private TextView hashes;
+    private String hashText;
+    private MicrosoftComputerVisionUtils.ComputerVisionItem visionItem;
+    private File file;
+    private ArrayList<String> tagList;
+    public ClipboardManager clipboard;
+
+
     private SQLiteDatabase mDB;
     private final static String TAG = ViewHistoryActivity.class.getSimpleName();
 
@@ -23,14 +45,23 @@ public class ViewHistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_history);
 
+        mItemResultsRV = findViewById(R.id.rv_item_list);
+        mItemResultsRV.setLayoutManager(new LinearLayoutManager(this));
+        mItemResultsRV.setHasFixedSize(true);
+
+
         DBHelper dbHelper = new DBHelper(this);
         mDB = dbHelper.getWritableDatabase();
 
-        ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> items = getAllSavedResults();
-        for (MicrosoftComputerVisionUtils.ComputerVisionItem item : items) {
-            Log.d(TAG, "URI: " + Uri.fromFile(item.file.getAbsoluteFile()));
-            Log.d(TAG, "Tags:" + item.tags.toString());
-        }
+        mAdapter = new Adapter();
+        mAdapter.updateResults(getAllSavedResults());
+        mItemResultsRV.setAdapter(mAdapter);
+
+        //ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> items = getAllSavedResults();
+       //for (MicrosoftComputerVisionUtils.ComputerVisionItem item : items) {
+        //    Log.d(TAG, "URI: " + Uri.fromFile(item.file.getAbsoluteFile()));
+        //    Log.d(TAG, "Tags:" + item.tags.toString());
+        //}
     }
 
     private ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> getAllSavedResults() {
