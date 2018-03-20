@@ -47,6 +47,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ItemResultViewHolder> 
     private File file;
     private ArrayList<String> tagList;
 
+    private final static String TAG  = Adapter.class.getSimpleName();
+
     public Adapter(){
         //mItemResultList = new ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem>();
     }
@@ -93,13 +95,17 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ItemResultViewHolder> 
             file = visionItem.file;
             tagList = visionItem.tags;
 
-            hashText = "";
+            String hashText = "";
 
             Bitmap photoBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
             for (String item : tagList) {
+                Log.d(TAG, "item: " + item);
+                Log.d(TAG, "hashText: " + hashText);
                 hashText += item + " ";
             }
+
+            //hashText = tagList.toString();
 
             mPictureResultIV.setImageBitmap(photoBitmap);
             mItemResultTV.setText(hashText);
