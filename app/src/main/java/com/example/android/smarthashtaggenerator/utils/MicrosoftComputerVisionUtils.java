@@ -37,7 +37,11 @@ public class MicrosoftComputerVisionUtils {
         public static final String EXTRA_VISION_ITEM = "com.example.android.smarthashtaggenerator.utils.ComputerVisionItem.Result";
         public ArrayList<String> tags;
         public File file;
-}
+
+        public ComputerVisionItem() {
+            this.tags = new ArrayList<String>();
+        }
+    }
       /*  public ComputerVisionItem(String tag){
             this.tag= tag ;
 

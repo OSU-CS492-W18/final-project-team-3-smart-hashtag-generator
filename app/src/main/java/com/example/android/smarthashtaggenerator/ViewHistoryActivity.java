@@ -26,8 +26,6 @@ public class ViewHistoryActivity extends AppCompatActivity {
     private RecyclerView mItemResultsRV;
     private Adapter mAdapter;
 
-
-    //
     private ImageView image;
     private TextView hashes;
     private String hashText;
@@ -35,7 +33,6 @@ public class ViewHistoryActivity extends AppCompatActivity {
     private File file;
     private ArrayList<String> tagList;
     public ClipboardManager clipboard;
-
 
     private SQLiteDatabase mDB;
     private final static String TAG = ViewHistoryActivity.class.getSimpleName();
@@ -56,12 +53,6 @@ public class ViewHistoryActivity extends AppCompatActivity {
         mAdapter = new Adapter();
         mAdapter.updateResults(getAllSavedResults());
         mItemResultsRV.setAdapter(mAdapter);
-
-        //ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> items = getAllSavedResults();
-       //for (MicrosoftComputerVisionUtils.ComputerVisionItem item : items) {
-        //    Log.d(TAG, "URI: " + Uri.fromFile(item.file.getAbsoluteFile()));
-        //    Log.d(TAG, "Tags:" + item.tags.toString());
-        //}
     }
 
     private ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> getAllSavedResults() {
@@ -76,11 +67,15 @@ public class ViewHistoryActivity extends AppCompatActivity {
         );
 
         ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> savedResultsList = new ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem>();
-        ArrayList<String> savedTagsList = new ArrayList<String>();
         while (cursor.moveToNext()) {
+            ArrayList<String> savedTagsList = new ArrayList<String>();
+            MicrosoftComputerVisionUtils.ComputerVisionItem item = new MicrosoftComputerVisionUtils.ComputerVisionItem();
+
             Uri fileUri = Uri.parse(cursor.getString(
                     cursor.getColumnIndex(DBContract.SavedResults.COLUMN_PHOTO))
             );
+            item.file = new File(fileUri.getPath());
+
             String allTags = cursor.getString(
                     cursor.getColumnIndex(DBContract.SavedResults.COLUMN_TAGS));
             StringTokenizer stTags = new StringTokenizer(allTags, " ");
@@ -89,10 +84,10 @@ public class ViewHistoryActivity extends AppCompatActivity {
                 savedTagsList.add(token);
             }
             //savedLocationsList.add(location);
-            MicrosoftComputerVisionUtils.ComputerVisionItem item = new MicrosoftComputerVisionUtils.ComputerVisionItem();
-            item.file = new File(fileUri.getPath());
             item.tags = savedTagsList;
+            Log.d(TAG, "tags: " + item.tags.toString());
             savedResultsList.add(item);
+            //savedTagsList.clear();
         }
 
         cursor.close();
