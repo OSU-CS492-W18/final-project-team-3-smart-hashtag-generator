@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     // For deciding what to do in onActivityResult
     private int ACTIVITYRESULT_ID;
 
+    //For Lifecycle
+    private static final int COMPUTER_VISION_LOADER_ID = 0;
+
+
     // For taking photos
     private static final int REQUEST_TAKE_PHOTO = 1;
     private String mCurrentPhotoPath;
@@ -63,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mTakePhotoTV.getBackground().setAlpha(63);
         mChoosePhotoTV.getBackground().setAlpha(63);
         mHistoryPhotoTV.getBackground().setAlpha(63);
+
 
         DBHelper dbHelper = new DBHelper(this);
         mDB = dbHelper.getWritableDatabase();
@@ -99,6 +104,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(viewHistoryIntent);
             }
         });
+
+
+        getSupportLoaderManager()
+                .initLoader(COMPUTER_VISION_LOADER_ID, null, this);
+
 
     }
 

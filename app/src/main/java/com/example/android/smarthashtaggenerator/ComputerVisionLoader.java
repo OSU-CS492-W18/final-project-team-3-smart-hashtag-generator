@@ -29,12 +29,12 @@ public class ComputerVisionLoader extends AsyncTaskLoader<String> {
     @Override
     public void onStartLoading() {
         if (mVisionURL != null) {
-            /*if (visionResultsJSON != null) {
+            if (visionResultsJSON != null) {
                 Log.d(TAG, "using cached tags");
                 deliverResult(visionResultsJSON);
-            } else {*/
+            } else {
                 forceLoad();
-            //}
+            }
         }
     }
 
