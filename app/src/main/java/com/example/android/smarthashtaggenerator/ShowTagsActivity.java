@@ -60,14 +60,14 @@ public class ShowTagsActivity extends AppCompatActivity {
             hashes.setText(hashText);
         }
 
-        hashes.setOnClickListener(new View.OnClickListener() {
+        /*hashes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ClipData clip = ClipData.newPlainText("simple text", hashText);
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(getApplicationContext(), "Hashtags have been copied to the clipboard!", Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
     }
 
     @Override
@@ -98,6 +98,10 @@ public class ShowTagsActivity extends AppCompatActivity {
                     .setText(hashText)
                     .setChooserTitle(R.string.share_chooser_title)
                     .startChooser();*/
+            ClipData clip = ClipData.newPlainText("simple text", hashText);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getApplicationContext(), "Hashtags have been copied to the clipboard!", Toast.LENGTH_LONG).show();
+
             Intent sharingIntent = new Intent(Intent.ACTION_SEND);
             sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             sharingIntent.setType("image/*");
@@ -105,5 +109,11 @@ public class ShowTagsActivity extends AppCompatActivity {
             sharingIntent.putExtra(Intent.EXTRA_TEXT, hashText);
             startActivity(Intent.createChooser(sharingIntent, "Share with"));
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

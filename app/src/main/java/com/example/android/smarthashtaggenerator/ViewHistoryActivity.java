@@ -1,6 +1,8 @@
 package com.example.android.smarthashtaggenerator;
 
+import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.smarthashtaggenerator.utils.MicrosoftComputerVisionUtils;
 
@@ -21,16 +24,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class ViewHistoryActivity extends AppCompatActivity {
+public class ViewHistoryActivity extends AppCompatActivity
+        implements Adapter.OnItemClickListener {
 
     private RecyclerView mItemResultsRV;
     private Adapter mAdapter;
 
     private ImageView image;
     private TextView hashes;
-    private String hashText;
     private MicrosoftComputerVisionUtils.ComputerVisionItem visionItem;
-    private File file;
     private ArrayList<String> tagList;
     public ClipboardManager clipboard;
 
@@ -50,9 +52,42 @@ public class ViewHistoryActivity extends AppCompatActivity {
         DBHelper dbHelper = new DBHelper(this);
         mDB = dbHelper.getWritableDatabase();
 
-        mAdapter = new Adapter();
+        mAdapter = new Adapter(this);
         mAdapter.updateResults(getAllSavedResults());
         mItemResultsRV.setAdapter(mAdapter);
+
+        clipboard = (ClipboardManager)
+                getSystemService(Context.CLIPBOARD_SERVICE);
+    }
+
+    @Override
+    public void onItemClick(MicrosoftComputerVisionUtils.ComputerVisionItem visionItem) {
+        File file = visionItem.file;
+        String hashText = "";
+        for (String item : visionItem.tags) {
+            hashText += item + " ";
+        }
+        if (file != null && hashText != null) {
+            /*String shareText = "Weather for " + mForecastLocation +
+                    ", " + DATE_FORMATTER.format(mForecastItem.dateTime) +
+                    ": " + mForecastItem.temperature + mTemperatureUnitsAbbr +
+                    " - " + mForecastItem.description +
+                    " " + FORECAST_HASHTAG;*/
+            /*ShareCompat.IntentBuilder.from(this)
+                    .setType("text/plain")
+                    .setText(hashText)
+                    .setChooserTitle(R.string.share_chooser_title)
+                    .startChooser();*/
+            ClipData clip = ClipData.newPlainText("simple text", hashText);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getApplicationContext(), "Hashtags have been copied to the clipboard!", Toast.LENGTH_LONG).show();
+            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+            sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            sharingIntent.setType("image/*");
+            sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file.getAbsoluteFile()));
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, hashText);
+            startActivity(Intent.createChooser(sharingIntent, "Share with"));
+        }
     }
 
     private ArrayList<MicrosoftComputerVisionUtils.ComputerVisionItem> getAllSavedResults() {
@@ -93,4 +128,5 @@ public class ViewHistoryActivity extends AppCompatActivity {
         cursor.close();
         return savedResultsList;
     }
+
 }
